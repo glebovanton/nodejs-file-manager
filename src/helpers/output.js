@@ -1,5 +1,35 @@
-export function consoleLog (text) {
+import fs from 'node:fs/promises';
+
+export const TableRow = (name, isDirectory = false) => {
+    this.name = name;
+    this.type = isDirectory ? 'directory' : 'file';
+}
+
+export const consoleLog  = (text) =>{
     process.stdout.write(text + '\n');
+}
+
+export const showDirContent = async (dirPath) =>{
+    const dirContent = await fs.readdir(dirPath, { withFileTypes: true });
+
+    const [directories, files] = dirContent.reduce((acc, file) => {
+        acc[file.isDirectory() ? 0 : 1].push(file);
+
+        return acc;
+    }, [[], []]);
+
+    const directoriesRows = directories.map(directory => new TableRow(directory.name, true));
+    const filesRows = files.map(file => new TableRow(file.name));
+
+    consoleLog(directoriesRows.concat(filesRows), 'table');
+}
+
+export const showCurrentPlace = dirPath => {
+    consoleLog(`You are currently in ${dirPath}`);
+}
+
+export const goodbye = username => {
+    consoleLog(`Thank you for using File Manager, ${username}, goodbye!`);
 }
 
 export const welcome = username => {
