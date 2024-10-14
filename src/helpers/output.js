@@ -1,16 +1,18 @@
-import fs from 'node:fs/promises';
+import { readdir } from 'node:fs/promises';
 
-export const TableRow = (name, isDirectory = false) => {
-    this.name = name;
-    this.type = isDirectory ? 'directory' : 'file';
+export class TableRow {
+    constructor(name, isDirectory = false) {
+        this.name = name;
+        this.type = isDirectory ? 'directory' : 'file';
+    }
 }
 
-export const consoleLog  = (text) =>{
-    process.stdout.write(text + '\n');
-}
+export const consoleLog = (data) => {
+    process.stdout.write(JSON.stringify(data, null, 2) + '\n');
+};
 
 export const showDirContent = async (dirPath) =>{
-    const dirContent = await fs.readdir(dirPath, { withFileTypes: true });
+    const dirContent = await readdir(dirPath, { withFileTypes: true });
 
     const [directories, files] = dirContent.reduce((acc, file) => {
         acc[file.isDirectory() ? 0 : 1].push(file);
@@ -21,7 +23,7 @@ export const showDirContent = async (dirPath) =>{
     const directoriesRows = directories.map(directory => new TableRow(directory.name, true));
     const filesRows = files.map(file => new TableRow(file.name));
 
-    consoleLog(directoriesRows.concat(filesRows), 'table');
+    console.table(directoriesRows.concat(filesRows));
 }
 
 export const showCurrentPlace = dirPath => {
